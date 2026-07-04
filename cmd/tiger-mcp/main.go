@@ -4,7 +4,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"os"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -15,16 +15,18 @@ import (
 )
 
 func main() {
-	logger := log.New(os.Stderr, "tiger-mcp: ", log.LstdFlags)
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	cfg, err := config.Load()
 	if err != nil {
-		logger.Fatalf("config error: %v", err)
+		logger.Error("config error", "err", err)
+		os.Exit(1)
 	}
 
 	tigerClient, err := tiger.NewClient(cfg)
 	if err != nil {
-		logger.Fatalf("tiger client error: %v", err)
+		logger.Error("tiger client error", "err", err)
+		os.Exit(1)
 	}
 
 	server := mcp.NewServer(&mcp.Implementation{
@@ -41,6 +43,7 @@ func main() {
 	tools.RegisterGetOrders(server, tigerClient)
 
 	if err := server.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
-		logger.Fatalf("server exited with error: %v", err)
+		logger.Error("server exited with error", "err", err)
+		os.Exit(1)
 	}
 }

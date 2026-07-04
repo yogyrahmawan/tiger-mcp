@@ -56,6 +56,11 @@ func NewClient(cfg *config.Config) (*Client, error) {
 		return nil, fmt.Errorf("tiger: build client config: %w", err)
 	}
 
+	// tigerCfg.Timeout defaults to 15s (config.NewClientConfig), and
+	// NewQuoteHttpClient/NewHttpClient both apply the SDK's
+	// DefaultRetryPolicy() (5 retries, 60s max, 1-16s backoff) internally.
+	// That's a sensible default for this single-operator tool, so we don't
+	// duplicate timeout/retry handling here.
 	quoteHTTPClient := tigerclient.NewQuoteHttpClient(tigerCfg)
 	tradeHTTPClient := tigerclient.NewHttpClient(tigerCfg)
 

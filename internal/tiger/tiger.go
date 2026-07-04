@@ -38,11 +38,30 @@ type QuoteFetcher interface {
 	RealTimeQuotes(ctx context.Context, symbols []string) ([]Quote, error)
 }
 
+// quoteAPI is the subset of *quote.QuoteClient's methods this package calls.
+// It exists so tests can fake the Tiger SDK without hitting the network; the
+// real *quote.QuoteClient satisfies it structurally.
+type quoteAPI interface {
+	GetBrief(req model.BriefRequest) ([]model.Brief, error)
+	GetMarketState(market string) ([]model.MarketState, error)
+	GetKline(symbol, period string) ([]model.Kline, error)
+	GetQuoteDepth(req model.DepthQuoteRequest) ([]model.Depth, error)
+}
+
+// tradeAPI is the subset of *trade.TradeClient's methods this package calls.
+// It exists so tests can fake the Tiger SDK without hitting the network; the
+// real *trade.TradeClient satisfies it structurally.
+type tradeAPI interface {
+	Assets(req model.AssetsRequest) ([]model.Asset, error)
+	Positions(req model.PositionsRequest) ([]model.Position, error)
+	Orders(req model.OrdersRequest) ([]model.Order, error)
+}
+
 // Client is backed by the real Tiger Open API and implements this package's
 // fetcher interfaces (quote and trade).
 type Client struct {
-	quoteClient *quote.QuoteClient
-	tradeClient *trade.TradeClient
+	quoteClient quoteAPI
+	tradeClient tradeAPI
 }
 
 // NewClient builds Tiger quote and trade clients from the given credentials.

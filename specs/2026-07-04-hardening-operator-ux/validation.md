@@ -3,48 +3,48 @@
 How to know this phase is done and safe to merge.
 
 ## Build & static checks
-- [ ] `go build ./...` succeeds.
-- [ ] `go vet ./...` reports no issues.
-- [ ] `gofmt -l .` reports no files.
-- [ ] `go test ./...` passes (all existing tests, no regressions).
+- [x] `go build ./...` succeeds.
+- [x] `go vet ./...` reports no issues.
+- [x] `gofmt -l .` reports no files.
+- [x] `go test ./...` passes (all existing tests, no regressions).
 
 ## Error handling & input validation
-- [ ] All 7 tool handlers reviewed; error messages consistently prefixed
+- [x] All 7 tool handlers reviewed; error messages consistently prefixed
       with `"<tool_name>: ..."`.
-- [ ] No tool handler can panic on empty/nil/malformed input (confirmed by
+- [x] No tool handler can panic on empty/nil/malformed input (confirmed by
       inspection, backed by existing or newly-added unit tests).
 
 ## Timeouts & retry
-- [ ] `internal/tiger.NewClient` has a comment documenting that the Tiger
+- [x] `internal/tiger.NewClient` has a comment documenting that the Tiger
       SDK's default 15s timeout and `DefaultRetryPolicy()` (5 retries, 60s
       max, 1-16s backoff) are relied upon intentionally — no duplicate
       custom retry/timeout logic was added.
 
 ## Structured logging
-- [ ] `cmd/tiger-mcp/main.go` uses `log/slog` instead of a plain `*log.Logger`.
-- [ ] Fatal error paths (`config.Load` failure, `tiger.NewClient` failure,
+- [x] `cmd/tiger-mcp/main.go` uses `log/slog` instead of a plain `*log.Logger`.
+- [x] Fatal error paths (`config.Load` failure, `tiger.NewClient` failure,
       `server.Run` failure) log at Error level with structured fields (e.g.
       `"err"`) and still exit non-zero, preserving Phase 0-3's fail-fast
       behavior and message clarity.
-- [ ] Nothing is ever written to **stdout** by the logger (stdout remains
+- [x] Nothing is ever written to **stdout** by the logger (stdout remains
       reserved for the MCP protocol stream).
 
 ## README
-- [ ] Documents prerequisites (Go version), clone/build steps, all three env
+- [x] Documents prerequisites (Go version), clone/build steps, all three env
       vars with descriptions, a working Claude client stdio config snippet,
       and a list of all 7 tools.
-- [ ] No credential values or examples that look like real secrets are
+- [x] No credential values or examples that look like real secrets are
       included.
 
 ## Fresh-clone verification (performed for real, not just reviewed)
-- [ ] Cloned the repo into a scratch temp directory.
-- [ ] Followed only the README's steps: build succeeded as documented.
-- [ ] Set dummy-but-well-formed `TIGER_ID`/`TIGER_PRIVATE_KEY`/`TIGER_ACCOUNT`
+- [x] Cloned the repo into a scratch temp directory.
+- [x] Followed only the README's steps: build succeeded as documented.
+- [x] Set dummy-but-well-formed `TIGER_ID`/`TIGER_PRIVATE_KEY`/`TIGER_ACCOUNT`
       per the README's instructions; server started without needing any
       undocumented step.
-- [ ] MCP Inspector's `tools/list` against the freshly-built binary shows all
+- [x] MCP Inspector's `tools/list` against the freshly-built binary shows all
       **7** tools, matching Phase 3's baseline (no regression).
-- [ ] Any gap found during this walkthrough was fixed in the README before
+- [x] Any gap found during this walkthrough was fixed in the README before
       checking this box (not deferred).
 
 ## Deferred / follow-up (tracked, not a merge blocker)

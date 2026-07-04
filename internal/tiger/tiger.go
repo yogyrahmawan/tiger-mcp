@@ -10,6 +10,7 @@ import (
 	tigerconfig "github.com/tigerfintech/openapi-go-sdk/config"
 	"github.com/tigerfintech/openapi-go-sdk/model"
 	"github.com/tigerfintech/openapi-go-sdk/quote"
+	"github.com/tigerfintech/openapi-go-sdk/trade"
 
 	"github.com/yogyrahmawan/tiger-mcp/internal/config"
 )
@@ -37,12 +38,14 @@ type QuoteFetcher interface {
 	RealTimeQuotes(ctx context.Context, symbols []string) ([]Quote, error)
 }
 
-// Client is a QuoteFetcher backed by the real Tiger Open API.
+// Client is backed by the real Tiger Open API and implements this package's
+// fetcher interfaces (quote and trade).
 type Client struct {
 	quoteClient *quote.QuoteClient
+	tradeClient *trade.TradeClient
 }
 
-// NewClient builds a Tiger quote client from the given credentials.
+// NewClient builds Tiger quote and trade clients from the given credentials.
 func NewClient(cfg *config.Config) (*Client, error) {
 	tigerCfg, err := tigerconfig.NewClientConfig(
 		tigerconfig.WithTigerID(cfg.TigerID),
@@ -53,8 +56,13 @@ func NewClient(cfg *config.Config) (*Client, error) {
 		return nil, fmt.Errorf("tiger: build client config: %w", err)
 	}
 
-	httpClient := tigerclient.NewQuoteHttpClient(tigerCfg)
-	return &Client{quoteClient: quote.NewQuoteClient(httpClient)}, nil
+	quoteHTTPClient := tigerclient.NewQuoteHttpClient(tigerCfg)
+	tradeHTTPClient := tigerclient.NewHttpClient(tigerCfg)
+
+	return &Client{
+		quoteClient: quote.NewQuoteClient(quoteHTTPClient),
+		tradeClient: trade.NewTradeClientFromConfig(tradeHTTPClient, tigerCfg),
+	}, nil
 }
 
 // RealTimeQuotes returns real-time quotes for the given symbols via Tiger's

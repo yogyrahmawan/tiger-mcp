@@ -33,6 +33,9 @@ func main() {
 	}, nil)
 
 	tools.RegisterGetQuote(server, tigerClient)
+	tools.RegisterGetMarketStatus(server, tigerClient)
+	tools.RegisterGetKline(server, tigerClient)
+	tools.RegisterGetDepth(server, tigerClient)
 
 	if err := server.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
 		logger.Fatalf("server exited with error: %v", err)

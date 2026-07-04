@@ -2,7 +2,10 @@ module github.com/yogyrahmawan/tiger-mcp
 
 go 1.25.0
 
-require github.com/modelcontextprotocol/go-sdk v1.6.1
+require (
+	github.com/modelcontextprotocol/go-sdk v1.6.1
+	github.com/tigerfintech/openapi-go-sdk v0.4.2
+)
 
 require (
 	github.com/google/jsonschema-go v0.4.3 // indirect
